@@ -105,6 +105,27 @@ describe('UsersService', () => {
     });
   });
 
+  describe('update', () => {
+    it('should update an existing user', async () => {
+      const userId = 'test-user-id';
+      const updateUserDto = {
+        firstName: 'UpdatedName',
+        status: UserStatus.ACTIVE,
+      };
+
+      const result = await service.update(userId, updateUserDto);
+      expect(mockUserRepository.update).toHaveBeenCalledWith(
+        userId,
+        updateUserDto,
+      );
+
+      expect(result).toBeDefined();
+      expect(result.firstName).toBe(updateUserDto.firstName);
+      expect(result.status).toBe(updateUserDto.status);
+      expect(result.id).toBe(userId);
+    });
+  });
+
   describe('mapCreateUserDtoToUser', () => {
     it('should map CreateUserDto to User correctly', () => {
       const dto: CreateUserDto = {

@@ -13,8 +13,4 @@ export class UserRepository
   constructor(protected readonly em: EntityManager) {
     super(em, UserEntity);
   }
-
-  async findOneByEmail(email: string): Promise<User> {
-    return this.findOne({ email });
-  }
 }

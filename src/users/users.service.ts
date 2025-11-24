@@ -10,6 +10,8 @@ import {
   DEFAULT_SORT_ORDER,
   PaginationResult,
 } from '../common/pagination';
+import { IdType } from '../common/base.repository';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -23,19 +25,9 @@ export class UsersService {
     this.logger.setContext(UsersService.name);
   }
 
-  async findOne(email: string): Promise<User | undefined> {
-    this.logger.log(`Finding user by email: ${email}`);
-    return this.userRepository.findOneByEmail(email);
-  }
-
   async findOneById(id: string): Promise<User | null> {
     this.logger.log(`Finding user by ID: ${id}`);
     return this.userRepository.findOneById(id);
-  }
-
-  async findOneByEmail(email: string): Promise<User | null> {
-    this.logger.log(`Finding user by email: ${email}`);
-    return this.userRepository.findOneByEmail(email);
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -99,6 +91,20 @@ export class UsersService {
         sortOrder: paginationOptions.sortOrder,
       });
     });
+  }
+
+  async update(id: IdType, updateUserDto: UpdateUserDto): Promise<User> {
+    this.logger.log(
+      `Updating user ID ${id} with data: ${JSON.stringify(updateUserDto)}`,
+    );
+
+    const user = await this.transactionManager.saveInTransaction(async () => {
+      return this.userRepository.update(id, updateUserDto);
+    });
+
+    this.logger.log(`User updated with ID: ${user.id}`);
+
+    return user;
   }
 
   private mapCreateUserDtoToUser(createUserDto: CreateUserDto): User {

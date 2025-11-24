@@ -6,7 +6,9 @@ export const mockBaseRepository = {
   findAllUnpaginated: jest.fn(),
   findOneById: jest.fn(),
   findOne: jest.fn(),
-  update: jest.fn(),
+  update: jest.fn().mockImplementation(async (id: any, updateObj: any) => {
+    return { ...updateObj, id };
+  }),
   remove: jest.fn(),
   count: jest.fn(),
 };
