@@ -3,7 +3,7 @@
 export default $config({
   app(input) {
     return {
-      name: 'nestjs-crud-starter',
+      name: 'back-office-user-management-app',
       // removal: input?.stage === 'production' ? 'retain' : 'remove',
       removal: 'remove',
       // protect: ['production'].includes(input?.stage),

@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    container_name: nestjs-crud-starter
+    container_name: back-office-user-management-app
     ports:
       - "3000:3000"
     env_file:

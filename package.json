@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-crud-starter",
+  "name": "back-office-user-management-app",
   "version": "0.0.1",
   "description": "Nestjs Starter Template for CRUD + MikroORM",
   "author": "Alican Tokdemir <github.com/alicantokdemir>",

@@ -7,7 +7,7 @@ export class MetricsService {
 
   constructor() {
     this.register = new client.Registry();
-    this.register.setDefaultLabels({ app: 'nestjs-crud-starter' });
+    this.register.setDefaultLabels({ app: 'back-office-user-management-app' });
     client.collectDefaultMetrics({ register: this.register });
   }
 
