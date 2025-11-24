@@ -5,13 +5,10 @@ import { User, UserStatus } from '../../../users/entities/user.entity';
 @Entity({ tableName: 'user' })
 export class UserEntity extends BaseEntity {
   @Property({ type: types.text })
-  provider!: string;
+  firstName!: string;
 
   @Property({ type: types.text })
-  providerId!: string;
-
-  @Property({ type: types.text })
-  email!: string;
+  lastName!: string;
 
   @Enum({
     type: types.enum,
@@ -20,21 +17,16 @@ export class UserEntity extends BaseEntity {
   })
   status!: UserStatus;
 
-  @Property({ type: types.text, nullable: true })
-  name?: string;
-
-  @Property({ type: types.text, nullable: true })
-  picture?: string;
+  @Property({ type: types.integer, defaultRaw: '0' })
+  loginCount!: number;
 
   toObject() {
     return new User({
       id: this.id,
-      provider: this.provider,
-      providerId: this.providerId,
-      email: this.email,
-      name: this.name,
-      picture: this.picture,
+      firstName: this.firstName,
+      lastName: this.lastName,
       status: this.status,
+      loginCount: this.loginCount,
     });
   }
 }

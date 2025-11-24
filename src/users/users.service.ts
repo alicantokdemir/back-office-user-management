@@ -51,12 +51,10 @@ export class UsersService {
   private mapCreateUserDtoToUser(createUserDto: CreateUserDto): User {
     return new User({
       id: undefined,
-      provider: createUserDto.provider,
-      providerId: createUserDto.providerId,
-      email: createUserDto.email,
-      name: createUserDto.name,
-      picture: createUserDto.picture,
-      status: createUserDto.status ?? UserStatus.PENDING_VERIFICATION, // Default status
+      firstName: createUserDto.firstName,
+      lastName: createUserDto.lastName,
+      status: createUserDto.status,
+      loginCount: 0,
     });
   }
 }

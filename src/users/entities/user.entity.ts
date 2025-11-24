@@ -2,29 +2,23 @@ import { IdType } from '../../common/base.repository';
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
-  BLOCKED = 'BLOCKED',
-  PENDING_VERIFICATION = 'PENDING_VERIFICATION',
-  DELETED = 'DELETED',
+  INACTIVE = 'INACTIVE',
 }
 
 type UserProps = {
   id?: IdType;
-  provider: string;
-  providerId: string;
-  email: string;
-  name: string;
-  picture?: string;
+  firstName: string;
+  lastName: string;
   status: UserStatus;
+  loginCount: number;
 };
 
 export class User {
   readonly id?: IdType;
-  readonly provider: string;
-  readonly providerId: string;
-  readonly email: string;
-  readonly name: string;
-  readonly picture?: string;
+  readonly firstName: string;
+  readonly lastName: string;
   readonly status: UserStatus;
+  readonly loginCount: number;
 
   constructor(props: UserProps) {
     Object.assign(this, props);

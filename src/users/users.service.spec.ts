@@ -44,13 +44,9 @@ describe('UsersService', () => {
     );
 
     service = module.get<UsersService>(UsersService);
-
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('20 Aug 2020 00:12:00 GMT').getTime());
   });
 
   afterEach(() => {
-    jest.useRealTimers();
     jest.clearAllMocks();
   });
 
@@ -61,12 +57,9 @@ describe('UsersService', () => {
   describe('create', () => {
     it('should create a new user with default values', async () => {
       const dto: CreateUserDto = {
-        provider: 'google',
-        providerId: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        picture: 'pic.jpg',
-        status: null,
+        firstName: 'John',
+        lastName: 'Doe',
+        status: UserStatus.INACTIVE,
       };
 
       // @ts-ignore: Accessing private method for test
@@ -75,29 +68,24 @@ describe('UsersService', () => {
       const result = await service.create(dto);
 
       expect(mockUserRepository.create).toHaveBeenCalledWith(user);
-      expect(user.status).toBe(UserStatus.PENDING_VERIFICATION);
+      expect(result).toBeDefined();
     });
   });
 
   describe('mapCreateUserDtoToUser', () => {
     it('should map CreateUserDto to User correctly', () => {
       const dto: CreateUserDto = {
-        provider: 'google',
-        providerId: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        picture: 'pic.jpg',
+        firstName: 'Jane',
+        lastName: 'Smith',
         status: UserStatus.ACTIVE,
       };
       // @ts-ignore: Accessing private method for test
       const user: User = service['mapCreateUserDtoToUser'](dto);
 
-      expect(user.provider).toBe(dto.provider);
-      expect(user.providerId).toBe(dto.providerId);
-      expect(user.email).toBe(dto.email);
-      expect(user.name).toBe(dto.name);
-      expect(user.picture).toBe(dto.picture);
+      expect(user.firstName).toBe(dto.firstName);
+      expect(user.lastName).toBe(dto.lastName);
       expect(user.status).toBe(dto.status);
+      expect(user.loginCount).toBe(0);
     });
   });
 });
