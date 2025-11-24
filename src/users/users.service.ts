@@ -107,6 +107,11 @@ export class UsersService {
     return user;
   }
 
+  remove(id: IdType) {
+    this.logger.log(`Removing user by ID: ${id}`);
+    return this.userRepository.remove(id);
+  }
+
   private mapCreateUserDtoToUser(createUserDto: CreateUserDto): User {
     return new User({
       id: undefined,

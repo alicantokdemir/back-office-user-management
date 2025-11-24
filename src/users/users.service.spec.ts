@@ -126,6 +126,16 @@ describe('UsersService', () => {
     });
   });
 
+  describe('remove', () => {
+    it('should remove an existing user', async () => {
+      const userId = 'test-user-id-to-remove';
+
+      await service.remove(userId);
+
+      expect(mockUserRepository.remove).toHaveBeenCalledWith(userId);
+    });
+  });
+
   describe('mapCreateUserDtoToUser', () => {
     it('should map CreateUserDto to User correctly', () => {
       const dto: CreateUserDto = {
