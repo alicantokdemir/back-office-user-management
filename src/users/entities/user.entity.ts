@@ -5,7 +5,7 @@ export enum UserStatus {
   INACTIVE = 'INACTIVE',
 }
 
-type UserProps = {
+export type UserProps = {
   id?: IdType;
   firstName: string;
   lastName: string;
