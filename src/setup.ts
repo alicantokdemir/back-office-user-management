@@ -39,10 +39,10 @@ export function appSetup(app: INestApplication) {
 
 export function swaggerSetup(app: INestApplication) {
   const config = new DocumentBuilder()
-    .setTitle('Thing API')
-    .setDescription('Thing API description')
+    .setTitle('Back office user management API')
+    .setDescription('Back office user management API description')
     .setVersion('1.0')
-    .addTag('Thing')
+    .addTag('Back office User Management')
     .addApiKey(
       {
         type: 'apiKey',
@@ -50,6 +50,23 @@ export function swaggerSetup(app: INestApplication) {
         name: 'x-api-key',
       },
       'api-key-auth',
+    )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'jwt-auth',
+    )
+    .addCookieAuth(
+      'refresh-token-auth',
+      {
+        type: 'apiKey',
+        in: 'cookie',
+        name: 'refreshToken',
+      },
+      'cookie-auth',
     )
     .build();
 
