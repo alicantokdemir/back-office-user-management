@@ -9,6 +9,15 @@ services:
     depends_on:
       - prometheus
 
+  frontend:
+    build:
+      context: ./frontend-app
+    container_name: back-office-user-management-frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - app
+
   prometheus:
     image: prom/prometheus
     container_name: prometheus
