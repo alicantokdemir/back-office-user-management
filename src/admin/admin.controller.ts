@@ -7,9 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
-  Res,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -21,20 +18,8 @@ import {
   getSchemaPath,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { LoginDto } from './dto/login.dto';
-import { Request, Response } from 'express';
 import { ResponseDto } from '../common/response.dto';
-import { LoginResponseDto } from './dto/login.response.dto';
-import { RegisterDto } from './dto/register.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { RefreshTokenResponseDto } from './dto/refresh-token-response.dto';
 
-import {
-  ACCESS_TOKEN_COOKIE_AGE,
-  ACCESS_TOKEN_COOKIE_NAME,
-  REFRESH_TOKEN_COOKIE_AGE,
-  REFRESH_TOKEN_COOKIE_NAME,
-} from '../common/constants';
 import { AdminService } from './admin.service';
 import { ListUsersResponseDto } from './dto/list-users.response.dto';
 import { ListUserDto } from './dto/list-user.dto';
@@ -42,10 +27,9 @@ import { PaginationResult } from '../common/pagination';
 import { JwtAuth } from '../auth/auth.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { create } from 'domain';
 
 @ApiTags('admin')
-@ApiExtraModels(ResponseDto, LoginResponseDto, RefreshTokenResponseDto)
+@ApiExtraModels(ResponseDto, ListUsersResponseDto)
 @ApiBearerAuth('jwt-auth')
 @JwtAuth()
 @Controller('admin')
