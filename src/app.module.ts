@@ -7,6 +7,7 @@ import { CommonModule } from './common/common.module';
 import { MetricsModule } from './metrics/metrics.module';
 import { LoggerModule } from './loggers/logger.module';
 import { SessionsModule } from './sessions/session.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SessionsModule } from './sessions/session.module';
     SessionsModule,
     MetricsModule,
     LoggerModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
