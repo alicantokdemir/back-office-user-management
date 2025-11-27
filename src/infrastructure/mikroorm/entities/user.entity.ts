@@ -8,10 +8,10 @@ export class UserEntity extends BaseEntity {
   @OneToOne(() => AuthUserEntity, { nullable: true })
   authUser: AuthUserEntity = null;
 
-  @Property({ type: types.text })
+  @Property({ type: types.text, columnType: 'TEXT COLLATE NOCASE' })
   firstName!: string;
 
-  @Property({ type: types.text })
+  @Property({ type: types.text, columnType: 'TEXT COLLATE NOCASE' })
   lastName!: string;
 
   @Enum({
