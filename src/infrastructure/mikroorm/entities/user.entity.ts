@@ -1,9 +1,13 @@
-import { Entity, Enum, Property, types } from '@mikro-orm/core';
+import { Entity, Enum, OneToOne, Property, types } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { User, UserStatus } from '../../../users/entities/user.entity';
+import { AuthUserEntity } from './auth-user.entity';
 
 @Entity({ tableName: 'user' })
 export class UserEntity extends BaseEntity {
+  @OneToOne(() => AuthUserEntity, { nullable: true })
+  authUser: AuthUserEntity = null;
+
   @Property({ type: types.text })
   firstName!: string;
 

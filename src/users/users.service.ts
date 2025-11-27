@@ -1,8 +1,12 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { IUserRepository } from './user.types';
-import { User } from './entities/user.entity';
+import { User, UserStatus } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ITransactionManager } from '../common/transaction-manager';
 import { LoggerService } from '../loggers/logger.service';
 import { ListUserDto } from './dto/list-user.dto';
 import {
@@ -17,33 +21,41 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(
     @Inject(IUserRepository)
-    private readonly userRepository: IUserRepository,
-    @Inject(ITransactionManager)
-    private readonly transactionManager: ITransactionManager,
+    public readonly userRepository: IUserRepository,
     private readonly logger: LoggerService,
   ) {
     this.logger.setContext(UsersService.name);
   }
 
   async findOneById(id: string): Promise<User | null> {
-    this.logger.log(`Finding user by ID: ${id}`);
-    return this.userRepository.findOneById(id);
+    try {
+      this.logger.log(`Finding user by ID: ${id}`);
+      return this.userRepository.findOneById(id);
+    } catch (err) {
+      this.logger.error(`Failed to find user by ID: ${id}`, err);
+
+      throw new InternalServerErrorException();
+    }
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    this.logger.log(
-      `Creating user with data: ${JSON.stringify(createUserDto)}`,
-    );
+    try {
+      this.logger.log(
+        `Creating user with data: ${JSON.stringify(createUserDto)}`,
+      );
 
-    const user = await this.transactionManager.saveInTransaction(async () => {
-      return this.userRepository.create(
+      const user = await this.userRepository.create(
         this.mapCreateUserDtoToUser(createUserDto),
       );
-    });
 
-    this.logger.log(`User created with ID: ${user.id}`);
+      this.logger.log(`User created with ID: ${user.id}`);
 
-    return user;
+      return user;
+    } catch (err) {
+      this.logger.error('Failed to create user', err);
+
+      throw new InternalServerErrorException();
+    }
   }
 
   async list(listUserDto: ListUserDto): Promise<PaginationResult<User>> {
@@ -81,35 +93,66 @@ export class UsersService {
       filter,
     );
 
-    return Promise.all([getCount, getData]).then(([totalItems, items]) => {
-      return new PaginationResult<User>({
-        itemsPerPage,
-        currentPage: page,
-        totalItems,
-        items,
-        sortBy: paginationOptions.sortBy,
-        sortOrder: paginationOptions.sortOrder,
+    try {
+      return Promise.all([getCount, getData]).then(([totalItems, items]) => {
+        return new PaginationResult<User>({
+          itemsPerPage,
+          currentPage: page,
+          totalItems,
+          items,
+          sortBy: paginationOptions.sortBy,
+          sortOrder: paginationOptions.sortOrder,
+        });
       });
-    });
+    } catch (err) {
+      this.logger.error('Failed to list users', err);
+
+      throw new InternalServerErrorException();
+    }
   }
 
   async update(id: IdType, updateUserDto: UpdateUserDto): Promise<User> {
-    this.logger.log(
-      `Updating user ID ${id} with data: ${JSON.stringify(updateUserDto)}`,
-    );
+    try {
+      this.logger.log(
+        `Updating user ID ${id} with data: ${JSON.stringify(updateUserDto)}`,
+      );
 
-    const user = await this.transactionManager.saveInTransaction(async () => {
-      return this.userRepository.update(id, updateUserDto);
-    });
+      const user = await this.userRepository.update(id, updateUserDto);
 
-    this.logger.log(`User updated with ID: ${user.id}`);
+      this.logger.log(`User updated with ID: ${user.id}`);
 
-    return user;
+      return user;
+    } catch (err) {
+      this.logger.error(`Failed to update user ID ${id}`, err);
+
+      throw new InternalServerErrorException();
+    }
   }
 
-  remove(id: IdType) {
-    this.logger.log(`Removing user by ID: ${id}`);
-    return this.userRepository.remove(id);
+  async remove(id: IdType) {
+    try {
+      this.logger.log(`Removing user by ID: ${id}`);
+      return this.userRepository.remove(id);
+    } catch (err) {
+      this.logger.error(`Failed to remove user by ID: ${id}`, err);
+
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async validateUser(userId: string) {
+    try {
+      const user = await this.findOneById(userId);
+
+      if (!user || user.status === UserStatus.INACTIVE) {
+        return null;
+      }
+
+      return user;
+    } catch (error) {
+      this.logger.error(`Error validating user ID ${userId}: ${error}`);
+      throw new InternalServerErrorException('Error validating user');
+    }
   }
 
   private mapCreateUserDtoToUser(createUserDto: CreateUserDto): User {
