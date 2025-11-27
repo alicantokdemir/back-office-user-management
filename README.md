@@ -2,6 +2,8 @@
 
 Please refer to /docs for swagger documentation
 
+<img src="./preview.png">
+
 ### TODOs
 - [ ] Unit & e2e Tests
 - [x] Logging
