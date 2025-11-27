@@ -139,9 +139,8 @@ export default function UserList({
         sorting={sorting}
       />
 
-      <DialogTitle>User</DialogTitle>
-
       <DialogContent>
+        <DialogTitle>User</DialogTitle>
         {selectedItem && <UserForm user={selectedItem} onSubmit={onSubmit} />}
       </DialogContent>
     </Dialog>
