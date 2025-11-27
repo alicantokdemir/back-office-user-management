@@ -45,6 +45,25 @@ export class SessionsService {
     this.logger.log(`Session ${sessionId} deleted`);
   }
 
+  async removeAllSessionsForUser(userId: string) {
+    try {
+      this.logger.log(`Removing all sessions for userId=${userId}`);
+
+      const sessions = await this.sessionRepository.removeAll({ userId });
+
+      this.logger.log(`All sessions removed for userId=${userId}`);
+    } catch (err) {
+      this.logger.error(
+        `Failed to remove all sessions for userId=${userId}`,
+        err,
+      );
+
+      throw new InternalServerErrorException(
+        'Failed to remove all sessions for user',
+      );
+    }
+  }
+
   async validateSession(sessionId: string): Promise<Session | null> {
     try {
       this.logger.log(`Validating session ${sessionId}`);
