@@ -34,19 +34,73 @@
           "length": null,
           "mappedType": "datetime"
         },
-        "data": {
-          "name": "data",
+        "auth_user_id": {
+          "name": "auth_user_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "text"
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "TEXT COLLATE NOCASE",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "TEXT COLLATE NOCASE",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "status": {
+          "name": "status",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "length": null,
-          "mappedType": "text"
+          "default": "'ACTIVE'",
+          "enumItems": [
+            "ACTIVE",
+            "INACTIVE"
+          ],
+          "mappedType": "enum"
+        },
+        "login_count": {
+          "name": "login_count",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "default": "0",
+          "mappedType": "integer"
         }
       },
-      "name": "thing",
+      "name": "user",
       "indexes": [
+        {
+          "columnNames": [
+            "auth_user_id"
+          ],
+          "composite": false,
+          "keyName": "user_auth_user_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
         {
           "keyName": "primary",
           "columnNames": [
@@ -59,7 +113,21 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {},
+      "foreignKeys": {
+        "user_auth_user_id_foreign": {
+          "constraintName": "user_auth_user_id_foreign",
+          "columnNames": [
+            "auth_user_id"
+          ],
+          "localTableName": "user",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "auth_user",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      },
       "nativeEnums": {}
     },
     {
@@ -95,8 +163,8 @@
           "length": null,
           "mappedType": "datetime"
         },
-        "provider": {
-          "name": "provider",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -105,8 +173,18 @@
           "length": null,
           "mappedType": "text"
         },
-        "provider_id": {
-          "name": "provider_id",
+        "expires_at": {
+          "name": "expires_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "refresh_token_hash": {
+          "name": "refresh_token_hash",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -115,8 +193,8 @@
           "length": null,
           "mappedType": "text"
         },
-        "email": {
-          "name": "email",
+        "ip_address": {
+          "name": "ip_address",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -125,46 +203,29 @@
           "length": null,
           "mappedType": "text"
         },
-        "status": {
-          "name": "status",
+        "user_agent": {
+          "name": "user_agent",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": null,
-          "default": "'ACTIVE'",
-          "enumItems": [
-            "ACTIVE",
-            "BLOCKED",
-            "PENDING_VERIFICATION",
-            "DELETED"
-          ],
-          "mappedType": "enum"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "length": null,
-          "mappedType": "text"
-        },
-        "picture": {
-          "name": "picture",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
           "length": null,
           "mappedType": "text"
         }
       },
-      "name": "user",
+      "name": "session",
       "indexes": [
+        {
+          "columnNames": [
+            "user_id"
+          ],
+          "composite": false,
+          "keyName": "session_user_id_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
         {
           "keyName": "primary",
           "columnNames": [
@@ -177,7 +238,133 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {},
+      "foreignKeys": {
+        "session_user_id_foreign": {
+          "constraintName": "session_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "session",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "user",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "text"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "default": "CURRENT_TIMESTAMP",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "text"
+        },
+        "email": {
+          "name": "email",
+          "type": "TEXT COLLATE NOCASE",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "text"
+        }
+      },
+      "name": "auth_user",
+      "indexes": [
+        {
+          "columnNames": [
+            "user_id"
+          ],
+          "composite": false,
+          "keyName": "auth_user_user_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "email"
+          ],
+          "composite": false,
+          "keyName": "auth_user_email_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "primary",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "auth_user_user_id_foreign": {
+          "constraintName": "auth_user_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "auth_user",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "user",
+          "updateRule": "cascade"
+        }
+      },
       "nativeEnums": {}
     }
   ],
