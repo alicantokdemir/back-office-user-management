@@ -3,6 +3,7 @@ import {
   EntityManager,
   FilterQuery,
   OrderDefinition,
+  Populate,
   RequiredEntityData,
 } from '@mikro-orm/core';
 import {
@@ -11,19 +12,29 @@ import {
   PaginationOptions,
 } from '../../../common/base.repository';
 
-export abstract class BaseRepository<
+export abstract class BaseMikroormRepository<
   DbEntity extends { id: IdType; toObject: () => DomainEntity },
   DomainEntity extends RequiredEntityData<DbEntity>,
 > implements IBaseRepository<DomainEntity>
 {
   protected constructor(
-    protected readonly em: EntityManager,
+    protected em: EntityManager,
     protected readonly dbEntity: EntityClass<DbEntity>,
   ) {}
 
+  withEm(em: EntityManager) {
+    const repo = Object.create(this);
+    repo.em = em;
+    return repo;
+  }
+
+  protected abstract mapDomainFilterToOrm(filter: Partial<DomainEntity>);
+
+  protected abstract mapDomainToOrm(entity: DomainEntity): DbEntity;
+
   async create(newObj: DomainEntity): Promise<DomainEntity> {
-    const obj = this.em.create(this.dbEntity, newObj);
-    this.em.persistAndFlush(obj);
+    const obj = this.em.create(this.dbEntity, this.mapDomainToOrm(newObj));
+    await this.em.persistAndFlush(obj);
 
     return obj.toObject();
   }
@@ -31,10 +42,9 @@ export abstract class BaseRepository<
   async findAllUnpaginated(
     filter?: Partial<DomainEntity>,
   ): Promise<DomainEntity[]> {
-    const entities = await this.em.find(
-      this.dbEntity,
-      (filter as FilterQuery<DbEntity>) ?? {},
-    );
+    const ormFilter = this.mapDomainFilterToOrm(filter);
+
+    const entities = await this.em.find(this.dbEntity, ormFilter ?? {});
 
     return entities.map((entity) => entity.toObject());
   }
@@ -43,26 +53,23 @@ export abstract class BaseRepository<
     pagination: PaginationOptions,
     filter?: Partial<DomainEntity>,
   ): Promise<DomainEntity[]> {
-    const entities = await this.em.find(
-      this.dbEntity,
-      (filter as FilterQuery<DbEntity>) ?? {},
-      {
-        limit: pagination.limit,
-        offset: pagination.offset,
-        orderBy: {
-          [pagination.sortBy]: pagination.sortOrder,
-        } as OrderDefinition<DbEntity>,
-      },
-    );
+    const ormFilter = this.mapDomainFilterToOrm(filter);
+
+    const entities = await this.em.find(this.dbEntity, ormFilter ?? {}, {
+      limit: pagination.limit,
+      offset: pagination.offset,
+      orderBy: {
+        [pagination.sortBy]: pagination.sortOrder,
+      } as OrderDefinition<DbEntity>,
+    });
 
     return entities.map((entity) => entity.toObject());
   }
 
   async findOne(filter: Partial<DomainEntity>): Promise<DomainEntity | null> {
-    const entity = await this.em.findOne(
-      this.dbEntity,
-      filter as FilterQuery<DbEntity>,
-    );
+    const ormFilter = this.mapDomainFilterToOrm(filter);
+
+    const entity = await this.em.findOne(this.dbEntity, ormFilter);
 
     return entity?.toObject() ?? null;
   }
@@ -89,13 +96,28 @@ export abstract class BaseRepository<
 
     Object.assign(entity, updateObj);
 
-    this.em.persistAndFlush(entity);
+    await this.em.persistAndFlush(entity);
 
     return entity.toObject();
   }
 
-  async remove(id: IdType): Promise<void> {
-    await this.em.nativeDelete(this.dbEntity, { id } as FilterQuery<DbEntity>);
+  async removeAll(filter?: Partial<DomainEntity>): Promise<number> {
+    const ormFilter = this.mapDomainFilterToOrm(filter);
+
+    const deleted = await this.em.nativeDelete(
+      this.dbEntity,
+      ormFilter as FilterQuery<DbEntity>,
+    );
+
+    return deleted;
+  }
+
+  async remove(id: IdType): Promise<boolean> {
+    const deleted = await this.em.nativeDelete(this.dbEntity, {
+      id,
+    } as FilterQuery<DbEntity>);
+
+    return deleted > 0;
   }
 
   async count(filter?: Partial<DomainEntity>): Promise<number> {
