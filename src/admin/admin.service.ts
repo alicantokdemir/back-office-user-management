@@ -2,28 +2,12 @@ import {
   BadRequestException,
   Inject,
   Injectable,
-  UnauthorizedException,
-  ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { LoggerService } from '../loggers/logger.service';
-import { LoginDto } from './dto/login.dto';
 import { UsersService } from '../users/users.service';
-import { verify, hash } from '@node-rs/argon2';
-import { JwtService } from '@nestjs/jwt';
-import {
-  JWT_REFRESH_TOKEN_EXPIRY,
-  JWT_ACCESS_TOKEN_EXPIRY,
-  JWT_SECRET,
-  JWT_REFRESH_SECRET,
-} from '../common/constants';
-import { LoginResponseDto } from './dto/login.response.dto';
-import { UserStatus } from '../users/entities/user.entity';
-import { RegisterDto } from './dto/register.dto';
-import { AuthUser } from './entities/auth-user.entity';
-import { v4 } from 'uuid';
+
 import { ISessionRepository } from '../sessions/session.types';
-import { Session } from '../sessions/entities/session.entity';
 import { ITransactionManager } from '../common/transaction-manager';
 import { IUserRepository } from '../users/user.types';
 import { SessionsService } from '../sessions/sessions.service';
