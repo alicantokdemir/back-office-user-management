@@ -17,7 +17,8 @@ export interface IBaseRepository<DomainEntity> {
   ): Promise<DomainEntity[]>;
   findOneById(id: IdType): Promise<DomainEntity | null>;
   findOne(filter: Partial<DomainEntity>): Promise<DomainEntity | null>;
-  remove(id: IdType): Promise<void>;
+  remove(id: IdType): Promise<boolean>;
+  removeAll(filter: Partial<DomainEntity>): Promise<number>;
   /**
    * Returns all entities matching the filter.
    * WARNING: Only use for batch operations (export, reporting) where the result set may be large.
